@@ -1,0 +1,57 @@
+{
+  "baseline": {
+    "reward": 0.0,
+    "evidence": "solution/evidence/baseline.log"
+  },
+  "oracle": {
+    "reward": 1.0,
+    "evidence": "solution/evidence/oracle.log"
+  },
+  "partials": [
+    {
+      "challenge_id": "C1",
+      "reward": 0.263158,
+      "evidence": "solution/evidence/partial-c1.log"
+    },
+    {
+      "challenge_id": "C2",
+      "reward": 0.157895,
+      "evidence": "solution/evidence/partial-c2.log"
+    },
+    {
+      "challenge_id": "C3",
+      "reward": 0.157895,
+      "evidence": "solution/evidence/partial-c3.log"
+    },
+    {
+      "challenge_id": "C4",
+      "reward": 0.157895,
+      "evidence": "solution/evidence/partial-c4.log"
+    },
+    {
+      "challenge_id": "C5",
+      "reward": 0.315789,
+      "evidence": "solution/evidence/partial-c5.log"
+    }
+  ],
+  "bypasses": [
+    {
+      "id": "B1",
+      "description": "返回空事件列表并正常退出",
+      "reward": 0.0,
+      "evidence": "solution/evidence/bypass-empty.log"
+    },
+    {
+      "id": "B2",
+      "description": "固定回放随包演示结果",
+      "reward": 0.157895,
+      "evidence": "solution/evidence/bypass-sample.log"
+    },
+    {
+      "id": "B3",
+      "description": "只写空区间和全零汇总",
+      "reward": 0.0,
+      "evidence": "solution/evidence/bypass-truncated.log"
+    }
+  ]
+}

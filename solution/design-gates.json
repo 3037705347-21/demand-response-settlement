@@ -1,0 +1,214 @@
+{
+  "name": "demand-response-settlement",
+  "category": "F.2 能源系统 (Energy Systems)",
+  "scene": "商业用户跨夏令时切换的需求响应事件结算，核验逐15分钟基线、削减容量和补偿金额",
+  "core_task": "修复 dr_settle 命令行结算程序，使事件窗展开、基线选取、补偿计算和输入拒收同时符合运营结算规则，并生成 settlement.json 与 summary.csv",
+  "data_provenance": {
+    "kind": "generated",
+    "source": "固定种子 2417 的运营样例生成器：目标日为2026-11-01，以00:45、01:00、01:15、01:30、01:45、02:00六个墙上时刻为负荷剖面；十个基线候选日按日期和时刻叠加整数抖动，剔除维护日与缺测日，事件日实际负荷另按固定序列写入。生成器为 solution/generate_fixture.py，不冒充现场采集。",
+    "seed": 2417
+  },
+  "answer_verification": "事件端点按 America/Los_Angeles 解析后转为 UTC，按实际经过时间每15分钟展开，因此秋季回拨日的01:00至01:45各出现两次，共10个区间；每个墙上时刻只取事件日前状态为 normal 且六个时刻齐全的候选中负荷最高的5个值求平均，两个01时段共享同一墙上时刻基线；每区间削减为 max(0, baseline_kw-actual_kw)，计费容量为 min(削减, committed_kw)，电量乘0.25小时、再乘事件费率，汇总后保留3位小数。开题时用独立表算脚本复核这四项结果和两份产物。",
+  "environment": {
+    "base_image": "python:3.12.8-slim-bookworm@sha256:2199a62885a12290dc9c5be3ca0681d367576ab7bf037da120e564723292a2f0",
+    "dependencies_locked": true,
+    "allow_internet": true,
+    "network_reason": "结算逻辑只使用 Python 标准库和随包 CSV；环境网络开启仅为让编码代理访问本地模型代理，测试依赖由随包 wheelhouse 离线安装",
+    "architectures": ["amd64", "arm64"]
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "statement": "按事件在本地区的实际 UTC 经过时间展开15分钟区间；秋季重复时段保留两个带偏移的墙上时刻，边界落在重复小时时起始取较早实例、结束取较晚实例，春季不存在的边界整体拒绝",
+      "observable": "settlement.json 中 intervals[].local_start、start_utc 的数量、顺序和偏移",
+      "expected_basis": "ZoneInfo America/Los_Angeles 解析事件端点，以UTC步长15分钟迭代，每次转换回本地时间",
+      "test_ids": ["T1", "T2", "T3", "T13"]
+    },
+    {
+      "id": "R2",
+      "statement": "基线按事件墙上时刻匹配：只使用事件日前状态为 normal 且所需时刻齐全的候选日，逐时刻取最高的5个千瓦值平均；回拨产生的两个同名墙上时刻使用同一基线",
+      "observable": "intervals[].baseline_kw",
+      "expected_basis": "候选日按本地日期、状态和同一HH:MM筛选，降序取5个后求算术平均",
+      "test_ids": ["T4", "T5", "T6"]
+    },
+    {
+      "id": "R3",
+      "statement": "逐区间削减不得为负，计费削减不得超过 committed_kw；补偿为计费电量乘费率，JSON总量和 summary.csv 要与区间结果一致",
+      "observable": "reduction_kw、eligible_reduction_kw、payment_usd、totals 和 summary.csv",
+      "expected_basis": "max(0, baseline-actual) 后再 min(committed)，电量=千瓦×0.25小时，金额=电量×rate",
+      "test_ids": ["T7", "T8", "T9"]
+    },
+    {
+      "id": "R4",
+      "statement": "重复UTC读数、非15分钟边界、非法事件时段等输入必须在写任何产物前整体拒绝并返回非零状态",
+      "observable": "进程退出码以及输出目录中不存在 settlement.json、summary.csv 或 portfolio.json",
+      "expected_basis": "所有事件、读数和状态先解析校验，再创建临时结果，失败路径不落正式产物",
+      "test_ids": ["T10", "T11", "T12"]
+    },
+    {
+      "id": "R5",
+      "statement": "从候选事件中选出满足目标电量、总预算和事件数上限的组合，同一站点已选事件的UTC区间不得重叠；总成本包含各事件区间补偿和选中组合同刻峰值产生的需量电费，先最小化总成本，再最大化电量，最后取排序后事件ID字典序最小的组合",
+      "observable": "portfolio.json 的 selected_event_ids、eligible_kwh、incentive_usd、demand_charge_usd 和 payment_usd",
+      "expected_basis": "对各候选事件先按既有规则求 eligible_kwh 与区间补偿，再按选中事件在每个UTC区间块的 committed_kw 合计求峰值并计需量电费，在冲突图、预算和数量约束下搜索",
+      "test_ids": ["T14", "T15", "T16", "T17", "T18", "T19"]
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "kind": "boundary",
+      "requirement_ids": ["R1"],
+      "expected": "回拨事件00:45到02:15给出10个区间，01:00至01:45各出现两个不同偏移"
+    },
+    {
+      "id": "T2",
+      "kind": "boundary",
+      "requirement_ids": ["R1"],
+      "expected": "春季01:30到03:15只给出01:30-08:00、01:45-08:00、03:00-07:00三个区间"
+    },
+    {
+      "id": "T3",
+      "kind": "normal",
+      "requirement_ids": ["R1"],
+      "expected": "回拨后的同名区间按UTC分别匹配到不同实际读数"
+    },
+    {
+      "id": "T4",
+      "kind": "normal",
+      "requirement_ids": ["R2"],
+      "expected": "逐时刻基线等于八个正常候选日中最高五个值的均值，维护日和缺测日被排除"
+    },
+    {
+      "id": "T5",
+      "kind": "boundary",
+      "requirement_ids": ["R2"],
+      "expected": "回拨前后两个同名墙上时刻具有相同 baseline_kw"
+    },
+    {
+      "id": "T6",
+      "kind": "normal",
+      "requirement_ids": ["R2"],
+      "expected": "基线不混入其他HH:MM读数，也不使用事件当日读数"
+    },
+    {
+      "id": "T7",
+      "kind": "boundary",
+      "requirement_ids": ["R3"],
+      "expected": "实际高于基线时削减为0；大幅削减时计费容量停在 committed_kw"
+    },
+    {
+      "id": "T8",
+      "kind": "normal",
+      "requirement_ids": ["R3"],
+      "expected": "每个区间payment_usd等于eligible_reduction_kw×0.25×rate，并保留3位小数"
+    },
+    {
+      "id": "T9",
+      "kind": "normal",
+      "requirement_ids": ["R3"],
+      "expected": "JSON totals与区间求和一致，summary.csv列名、顺序和金额与JSON一致"
+    },
+    {
+      "id": "T10",
+      "kind": "negative",
+      "requirement_ids": ["R4"],
+      "expected": "重复UTC读数被拒绝，退出非零且没有正式输出文件"
+    },
+    {
+      "id": "T11",
+      "kind": "negative",
+      "requirement_ids": ["R4"],
+      "expected": "非15分钟边界或负电量被拒绝，且没有半成品"
+    },
+    {
+      "id": "T12",
+      "kind": "negative",
+      "requirement_ids": ["R4"],
+      "expected": "事件结束不晚于开始或未知状态被拒绝，且没有半成品"
+    },
+    {
+      "id": "T13",
+      "kind": "boundary",
+      "requirement_ids": ["R1"],
+      "expected": "回拨重复小时内的事件从较早01:00展开到较晚01:30，保留两段偏移不同的同名墙上时刻"
+    },
+    {
+      "id": "T14",
+      "kind": "combination",
+      "requirement_ids": ["R5"],
+      "expected": "贪心选择单条最高电量事件会失败，而较低单条电量但总成本更低的组合满足目标并入选"
+    },
+    {
+      "id": "T15",
+      "kind": "conflict",
+      "requirement_ids": ["R5"],
+      "expected": "同一站点两个UTC区间重叠的事件不能同时入选，选择会转向无冲突的替代组合"
+    },
+    {
+      "id": "T16",
+      "kind": "tie-break",
+      "requirement_ids": ["R5"],
+      "expected": "补偿和电量完全相同时按排序后事件ID字典序选择"
+    },
+    {
+      "id": "T17",
+      "kind": "negative",
+      "requirement_ids": ["R5"],
+      "expected": "没有组合满足目标时返回非零且不写出三份正式产物"
+    },
+    {
+      "id": "T18",
+      "kind": "scale",
+      "requirement_ids": ["R5"],
+      "expected": "30个不同站点候选事件在预算恰好覆盖12个事件时，30秒内选出ID最小的前12个组合"
+    },
+    {
+      "id": "T19",
+      "kind": "non_additive",
+      "requirement_ids": ["R5"],
+      "expected": "两笔便宜事件同刻重叠时需量峰值抬高并被预算排除，最终选择错峰且总成本更低的组合"
+    }
+  ],
+  "challenges": [
+    {
+      "id": "C1",
+      "description": "本地墙上时间在秋季回拨和春季跳时不是可简单等步长枚举的序列",
+      "failure_mode": "按固定UTC偏移枚举本地时间，回拨小时被吞掉，跳时后产生不存在的区间",
+      "fix_action": "用 ZoneInfo 解析端点并转UTC，按实际经过时间迭代后再转回本地时间",
+      "requirement_ids": ["R1"],
+      "test_ids": ["T1", "T2", "T3", "T13"]
+    },
+    {
+      "id": "C2",
+      "description": "基线既受候选日运营状态和完整度约束，又不能区分回拨后重复出现的同一HH:MM",
+      "failure_mode": "直接平均所有候选读数，保留维护日、缺测日，并把两个同名时段拆成互不相关的基线",
+      "fix_action": "以本地日期和墙上HH:MM建立候选索引，先筛normal与完整日，再逐时刻取最高5个求均值",
+      "requirement_ids": ["R2"],
+      "test_ids": ["T4", "T5", "T6"]
+    },
+    {
+      "id": "C3",
+      "description": "削减、合同容量上限、能量换算和金额汇总需要保持同一口径",
+      "failure_mode": "将基线减实际直接当计费容量，出现负削减或超过合同容量的补偿",
+      "fix_action": "先截断负削减，再按committed_kw封顶，统一乘0.25小时和事件费率后生成汇总",
+      "requirement_ids": ["R3"],
+      "test_ids": ["T7", "T8", "T9"]
+    },
+    {
+      "id": "C4",
+      "description": "输入拒收必须发生在创建正式产物之前，避免重复读数和坏时段留下半成品",
+      "failure_mode": "边读边写，后出现的重复或非法记录只覆盖内存，进程仍以成功状态结束",
+      "fix_action": "先完成全量解析与唯一性、边界、状态校验，再在临时目录生成三份产物并原子落位",
+      "requirement_ids": ["R4"],
+      "test_ids": ["T10", "T11", "T12"]
+    },
+    {
+      "id": "C5",
+      "description": "候选事件之间存在站点区间冲突，单事件最优会挡住更高价值的组合，且并列结果需要稳定裁决",
+      "failure_mode": "按事件补偿或电量单独排序做贪心，选中重叠事件或错过满足预算的最优组合",
+      "fix_action": "建立同站点UTC区间冲突关系，在预算和数量约束下分支定界，并按补偿、电量、ID顺序逐级比较",
+      "requirement_ids": ["R5"],
+      "test_ids": ["T14", "T15", "T16", "T17", "T18", "T19"]
+    }
+  ]
+}

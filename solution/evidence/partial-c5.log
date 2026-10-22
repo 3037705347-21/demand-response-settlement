@@ -1,0 +1,238 @@
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/partial-c5/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/partial-c5/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Exit: 0
+Reward: 0.315789
+stdout:
+Looking in links: /tests/wheels
+Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))
+Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))
+Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))
+Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))
+Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))
+Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest
+Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1
+
+stderr:
+  WARNING: The script pygmentize is installed in '/home/worker/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The scripts py.test and pytest are installed in '/home/worker/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+
+[pytest]
+FFFFFFFFFFFFF......                                                      [100%]
+=================================== FAILURES ===================================
+_______________ test_c1_fallback_event_keeps_both_repeated_hours _______________
+
+    def test_c1_fallback_event_keeps_both_repeated_hours():
+        """The shipped fall-back event expands to ten distinct elapsed intervals."""
+        outcome = _run_shipped()
+>       assert outcome["status"] == 0 and outcome["payload"] is not None
+E       assert (1 == 0)
+
+/tests/test_outputs.py:360: AssertionError
+_____________ test_c1_spring_forward_skips_nonexistent_clock_hours _____________
+
+    def test_c1_spring_forward_skips_nonexistent_clock_hours():
+        """A spring-forward event contains only intervals that occurred in UTC."""
+        events, days, readings = _spring_case()
+        outcome = _run_temporary(events, days, readings)
+>       assert outcome["status"] == 0 and outcome["payload"] is not None
+E       assert (1 == 0)
+
+/tests/test_outputs.py:381: AssertionError
+_____________ test_c1_repeated_clock_matches_distinct_utc_readings _____________
+
+    def test_c1_repeated_clock_matches_distinct_utc_readings():
+        """The two 01:15 intervals retain their separate actual readings."""
+        outcome = _run_shipped()
+>       assert outcome["status"] == 0 and outcome["payload"] is not None
+E       assert (1 == 0)
+
+/tests/test_outputs.py:393: AssertionError
+_________ test_c1_ambiguous_boundaries_use_earlier_start_and_later_end _________
+
+    def test_c1_ambiguous_boundaries_use_earlier_start_and_later_end():
+        """An event inside the repeated hour includes both wall-clock passes."""
+        events, days, readings = _ambiguous_boundary_case()
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        rows = outcome["payload"]["events"][0]["intervals"]
+>       assert [row["local_start"] for row in rows] == [
+            "2026-11-01T01:00:00-07:00",
+            "2026-11-01T01:15:00-07:00",
+            "2026-11-01T01:30:00-07:00",
+            "2026-11-01T01:45:00-07:00",
+            "2026-11-01T01:00:00-08:00",
+            "2026-11-01T01:15:00-08:00",
+            "2026-11-01T01:30:00-08:00",
+        ]
+E       AssertionError: assert ['2026-11-01T...:30:00-07:00'] == ['2026-11-01T...0-08:00', ...]
+E         
+E         Right contains 4 more items, first extra item: '2026-11-01T01:45:00-07:00'
+E         Use -v to get more diff
+
+/tests/test_outputs.py:408: AssertionError
+_____________ test_c2_baseline_uses_top_five_complete_normal_days ______________
+
+    def test_c2_baseline_uses_top_five_complete_normal_days():
+        """Maintenance and incomplete dates stay out of each wall-clock baseline."""
+        events, days, readings = _case_data([450.0, 450.0, 450.0])
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        rows = outcome["payload"]["events"][0]["intervals"]
+>       assert [row["baseline_kw"] for row in rows] == [600.0, 650.0, 720.0]
+E       assert [656.0, 662.222, 776.0] == [600.0, 650.0, 720.0]
+E         
+E         At index 0 diff: 656.0 != 600.0
+E         Use -v to get more diff
+
+/tests/test_outputs.py:425: AssertionError
+__________ test_c2_fallback_folds_share_the_same_wall_clock_baseline ___________
+
+    def test_c2_fallback_folds_share_the_same_wall_clock_baseline():
+        """Both repeated 01:15 rows use the single wall-clock baseline."""
+        outcome = _run_shipped()
+>       assert outcome["status"] == 0 and outcome["payload"] is not None
+E       assert (1 == 0)
+
+/tests/test_outputs.py:431: AssertionError
+______________ test_c2_baseline_does_not_mix_clocks_or_event_day _______________
+
+    def test_c2_baseline_does_not_mix_clocks_or_event_day():
+        """Neighbouring clocks and the event date do not enter a baseline value."""
+        events, days, readings = _case_data([450.0, 450.0, 450.0])
+        event_site, event_timestamp, event_kwh = _reading(
+            "2026-10-20", "12:00", "America/Los_Angeles", 5000.0
+        )
+        readings = [
+            (site, event_timestamp, event_kwh)
+            if timestamp == event_timestamp
+            else (site, timestamp, value)
+            for site, timestamp, value in readings
+        ]
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        first = outcome["payload"]["events"][0]["intervals"][0]
+>       assert first["baseline_kw"] == 600.0
+E       assert 656.0 == 600.0
+
+/tests/test_outputs.py:456: AssertionError
+_____________ test_c3_reduction_is_nonnegative_and_capacity_capped _____________
+
+    def test_c3_reduction_is_nonnegative_and_capacity_capped():
+        """Reduction stops at zero and eligible capacity stops at the contract."""
+        events, days, readings = _case_data([650.0, 500.0, 200.0], confounders=False)
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        rows = outcome["payload"]["events"][0]["intervals"]
+>       assert [row["reduction_kw"] for row in rows] == [0.0, 150.0, 520.0]
+E       assert [-50.0, 150.0, 520.0] == [0.0, 150.0, 520.0]
+E         
+E         At index 0 diff: -50.0 != 0.0
+E         Use -v to get more diff
+
+/tests/test_outputs.py:465: AssertionError
+___________ test_c3_payment_uses_quarter_hour_energy_and_event_rate ____________
+
+    def test_c3_payment_uses_quarter_hour_energy_and_event_rate():
+        """Each interval payment applies 0.25 hours and the event rate."""
+        events, days, readings = _case_data([650.0, 500.0, 200.0], confounders=False)
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        rows = outcome["payload"]["events"][0]["intervals"]
+>       assert [row["payment_usd"] for row in rows] == [0.0, 18.75, 22.5]
+E       assert [-6.25, 18.75, 65.0] == [0.0, 18.75, 22.5]
+E         
+E         At index 0 diff: -6.25 != 0.0
+E         Use -v to get more diff
+
+/tests/test_outputs.py:475: AssertionError
+__________ test_c3_totals_and_summary_use_unrounded_interval_results ___________
+
+    def test_c3_totals_and_summary_use_unrounded_interval_results():
+        """JSON totals and the CSV row agree with the raw interval arithmetic."""
+        events, days, readings = _case_data([650.0, 500.0, 200.0], confounders=False)
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        totals = outcome["payload"]["events"][0]["totals"]
+        expected = {
+            "reduction_kwh": 167.5,
+            "eligible_kwh": 82.5,
+            "payment_usd": 41.25,
+        }
+>       assert totals == expected
+E       AssertionError: assert {'eligible_kw...n_kwh': 155.0} == {'eligible_kw...n_kwh': 167.5}
+E         
+E         Differing items:
+E         {'payment_usd': 77.5} != {'payment_usd': 41.25}
+E         {'reduction_kwh': 155.0} != {'reduction_kwh': 167.5}
+E         {'eligible_kwh': 155.0} != {'eligible_kwh': 82.5}
+E         Use -v to get more diff
+
+/tests/test_outputs.py:489: AssertionError
+________________ test_c4_duplicate_utc_reading_leaves_no_output ________________
+
+    def test_c4_duplicate_utc_reading_leaves_no_output():
+        """A repeated UTC timestamp rejects the whole request."""
+        events, days, readings = _case_data([450.0, 450.0, 450.0])
+        readings.append(readings[0])
+        outcome = _run_temporary(events, days, readings)
+>       assert outcome["status"] != 0
+E       assert 0 != 0
+
+/tests/test_outputs.py:507: AssertionError
+__________ test_c4_bad_timestamp_or_negative_energy_leaves_no_output ___________
+
+    def test_c4_bad_timestamp_or_negative_energy_leaves_no_output():
+        """Off-grid timestamps and negative energy never yield partial files."""
+        events, days, readings = _case_data([450.0, 450.0, 450.0])
+        off_grid = list(readings)
+        off_grid[0] = (off_grid[0][0], "2026-10-06T19:05:00Z", off_grid[0][2])
+        negative = list(readings)
+        negative[0] = (negative[0][0], negative[0][1], "-1.000")
+        off_grid_outcome = _run_temporary(events, days, off_grid)
+        negative_outcome = _run_temporary(events, days, negative)
+>       assert off_grid_outcome["status"] != 0 and negative_outcome["status"] != 0
+E       assert (0 != 0)
+
+/tests/test_outputs.py:524: AssertionError
+_______________ test_c4_invalid_event_or_status_leaves_no_output _______________
+
+    def test_c4_invalid_event_or_status_leaves_no_output():
+        """A zero-length event or unknown day status is rejected before writing."""
+        events, days, readings = _case_data([450.0, 450.0, 450.0])
+        bad_event = [list(events[0])]
+        bad_event[0][3] = bad_event[0][2]
+        bad_days = [list(row) for row in days]
+        bad_days[0][1] = "holiday"
+        event_outcome = _run_temporary(bad_event, days, readings)
+        status_outcome = _run_temporary(events, bad_days, readings)
+>       assert event_outcome["status"] != 0 and status_outcome["status"] != 0
+E       assert (0 != 0)
+
+/tests/test_outputs.py:542: AssertionError
+=============================== warnings summary ===============================
+../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-v60jum6j'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/lastfailed: [Errno 30] Read-only file system: '/tests/pytest-cache-files-1fqef5h6'
+    config.cache.set("cache/lastfailed", self.lastfailed)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+---------------- generated xml file: /logs/verifier/results.xml ----------------
+=========================== short test summary info ============================
+FAILED ../tests/test_outputs.py::test_c1_fallback_event_keeps_both_repeated_hours
+FAILED ../tests/test_outputs.py::test_c1_spring_forward_skips_nonexistent_clock_hours
+FAILED ../tests/test_outputs.py::test_c1_repeated_clock_matches_distinct_utc_readings
+FAILED ../tests/test_outputs.py::test_c1_ambiguous_boundaries_use_earlier_start_and_later_end
+FAILED ../tests/test_outputs.py::test_c2_baseline_uses_top_five_complete_normal_days
+FAILED ../tests/test_outputs.py::test_c2_fallback_folds_share_the_same_wall_clock_baseline
+FAILED ../tests/test_outputs.py::test_c2_baseline_does_not_mix_clocks_or_event_day
+FAILED ../tests/test_outputs.py::test_c3_reduction_is_nonnegative_and_capacity_capped
+FAILED ../tests/test_outputs.py::test_c3_payment_uses_quarter_hour_energy_and_event_rate
+FAILED ../tests/test_outputs.py::test_c3_totals_and_summary_use_unrounded_interval_results
+FAILED ../tests/test_outputs.py::test_c4_duplicate_utc_reading_leaves_no_output
+FAILED ../tests/test_outputs.py::test_c4_bad_timestamp_or_negative_energy_leaves_no_output
+FAILED ../tests/test_outputs.py::test_c4_invalid_event_or_status_leaves_no_output
+13 failed, 6 passed, 2 warnings in 3.01s

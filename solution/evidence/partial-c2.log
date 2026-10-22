@@ -1,0 +1,464 @@
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/partial-c2/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/partial-c2/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Exit: 0
+Reward: 0.157895
+stdout:
+Looking in links: /tests/wheels
+Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))
+Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))
+Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))
+Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))
+Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))
+Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest
+Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1
+
+stderr:
+  WARNING: The script pygmentize is installed in '/home/worker/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The scripts py.test and pytest are installed in '/home/worker/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+
+[pytest]
+FFFF.F.FFF.FFFFFFFF                                                      [100%]
+=================================== FAILURES ===================================
+_______________ test_c1_fallback_event_keeps_both_repeated_hours _______________
+
+    def test_c1_fallback_event_keeps_both_repeated_hours():
+        """The shipped fall-back event expands to ten distinct elapsed intervals."""
+        outcome = _run_shipped()
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        rows = outcome["payload"]["events"][0]["intervals"]
+        expected = [
+            "2026-11-01T00:45:00-07:00",
+            "2026-11-01T01:00:00-07:00",
+            "2026-11-01T01:15:00-07:00",
+            "2026-11-01T01:30:00-07:00",
+            "2026-11-01T01:45:00-07:00",
+            "2026-11-01T01:00:00-08:00",
+            "2026-11-01T01:15:00-08:00",
+            "2026-11-01T01:30:00-08:00",
+            "2026-11-01T01:45:00-08:00",
+            "2026-11-01T02:00:00-08:00",
+        ]
+>       assert [row["local_start"] for row in rows] == expected
+E       AssertionError: assert ['2026-11-01T...:00:00-08:00'] == ['2026-11-01T...0-08:00', ...]
+E         
+E         At index 5 diff: '2026-11-01T02:00:00-08:00' != '2026-11-01T01:00:00-08:00'
+E         Right contains 4 more items, first extra item: '2026-11-01T01:15:00-08:00'
+E         Use -v to get more diff
+
+/tests/test_outputs.py:374: AssertionError
+_____________ test_c1_spring_forward_skips_nonexistent_clock_hours _____________
+
+    def test_c1_spring_forward_skips_nonexistent_clock_hours():
+        """A spring-forward event contains only intervals that occurred in UTC."""
+        events, days, readings = _spring_case()
+        outcome = _run_temporary(events, days, readings)
+>       assert outcome["status"] == 0 and outcome["payload"] is not None
+E       assert (1 == 0)
+
+/tests/test_outputs.py:381: AssertionError
+_____________ test_c1_repeated_clock_matches_distinct_utc_readings _____________
+
+    def test_c1_repeated_clock_matches_distinct_utc_readings():
+        """The two 01:15 intervals retain their separate actual readings."""
+        outcome = _run_shipped()
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        repeated = [
+            row
+            for row in outcome["payload"]["events"][0]["intervals"]
+            if row["local_start"].startswith("2026-11-01T01:15:00")
+        ]
+>       assert [row["actual_kw"] for row in repeated] == [360.0, 340.0]
+E       assert [360.0] == [360.0, 340.0]
+E         
+E         Right contains one more item: 340.0
+E         Use -v to get more diff
+
+/tests/test_outputs.py:399: AssertionError
+_________ test_c1_ambiguous_boundaries_use_earlier_start_and_later_end _________
+
+    def test_c1_ambiguous_boundaries_use_earlier_start_and_later_end():
+        """An event inside the repeated hour includes both wall-clock passes."""
+        events, days, readings = _ambiguous_boundary_case()
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        rows = outcome["payload"]["events"][0]["intervals"]
+>       assert [row["local_start"] for row in rows] == [
+            "2026-11-01T01:00:00-07:00",
+            "2026-11-01T01:15:00-07:00",
+            "2026-11-01T01:30:00-07:00",
+            "2026-11-01T01:45:00-07:00",
+            "2026-11-01T01:00:00-08:00",
+            "2026-11-01T01:15:00-08:00",
+            "2026-11-01T01:30:00-08:00",
+        ]
+E       AssertionError: assert ['2026-11-01T...:30:00-07:00'] == ['2026-11-01T...0-08:00', ...]
+E         
+E         Right contains 4 more items, first extra item: '2026-11-01T01:45:00-07:00'
+E         Use -v to get more diff
+
+/tests/test_outputs.py:408: AssertionError
+__________ test_c2_fallback_folds_share_the_same_wall_clock_baseline ___________
+
+    def test_c2_fallback_folds_share_the_same_wall_clock_baseline():
+        """Both repeated 01:15 rows use the single wall-clock baseline."""
+        outcome = _run_shipped()
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        repeated = [
+            row
+            for row in outcome["payload"]["events"][0]["intervals"]
+            if row["local_start"].startswith("2026-11-01T01:15:00")
+        ]
+>       assert len(repeated) == 2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = len([{'actual_kw': 360.0, 'baseline_kw': 607.0, 'eligible_reduction_kw': 247.0, 'local_start': '2026-11-01T01:15:00-07:00', ...}])
+
+/tests/test_outputs.py:437: AssertionError
+_____________ test_c3_reduction_is_nonnegative_and_capacity_capped _____________
+
+    def test_c3_reduction_is_nonnegative_and_capacity_capped():
+        """Reduction stops at zero and eligible capacity stops at the contract."""
+        events, days, readings = _case_data([650.0, 500.0, 200.0], confounders=False)
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        rows = outcome["payload"]["events"][0]["intervals"]
+>       assert [row["reduction_kw"] for row in rows] == [0.0, 150.0, 520.0]
+E       assert [-50.0, 150.0, 520.0] == [0.0, 150.0, 520.0]
+E         
+E         At index 0 diff: -50.0 != 0.0
+E         Use -v to get more diff
+
+/tests/test_outputs.py:465: AssertionError
+___________ test_c3_payment_uses_quarter_hour_energy_and_event_rate ____________
+
+    def test_c3_payment_uses_quarter_hour_energy_and_event_rate():
+        """Each interval payment applies 0.25 hours and the event rate."""
+        events, days, readings = _case_data([650.0, 500.0, 200.0], confounders=False)
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        rows = outcome["payload"]["events"][0]["intervals"]
+>       assert [row["payment_usd"] for row in rows] == [0.0, 18.75, 22.5]
+E       assert [-6.25, 18.75, 65.0] == [0.0, 18.75, 22.5]
+E         
+E         At index 0 diff: -6.25 != 0.0
+E         Use -v to get more diff
+
+/tests/test_outputs.py:475: AssertionError
+__________ test_c3_totals_and_summary_use_unrounded_interval_results ___________
+
+    def test_c3_totals_and_summary_use_unrounded_interval_results():
+        """JSON totals and the CSV row agree with the raw interval arithmetic."""
+        events, days, readings = _case_data([650.0, 500.0, 200.0], confounders=False)
+        outcome = _run_temporary(events, days, readings)
+        assert outcome["status"] == 0 and outcome["payload"] is not None
+        totals = outcome["payload"]["events"][0]["totals"]
+        expected = {
+            "reduction_kwh": 167.5,
+            "eligible_kwh": 82.5,
+            "payment_usd": 41.25,
+        }
+>       assert totals == expected
+E       AssertionError: assert {'eligible_kw...n_kwh': 155.0} == {'eligible_kw...n_kwh': 167.5}
+E         
+E         Differing items:
+E         {'eligible_kwh': 155.0} != {'eligible_kwh': 82.5}
+E         {'reduction_kwh': 155.0} != {'reduction_kwh': 167.5}
+E         {'payment_usd': 77.5} != {'payment_usd': 41.25}
+E         Use -v to get more diff
+
+/tests/test_outputs.py:489: AssertionError
+__________ test_c4_bad_timestamp_or_negative_energy_leaves_no_output ___________
+
+    def test_c4_bad_timestamp_or_negative_energy_leaves_no_output():
+        """Off-grid timestamps and negative energy never yield partial files."""
+        events, days, readings = _case_data([450.0, 450.0, 450.0])
+        off_grid = list(readings)
+        off_grid[0] = (off_grid[0][0], "2026-10-06T19:05:00Z", off_grid[0][2])
+        negative = list(readings)
+        negative[0] = (negative[0][0], negative[0][1], "-1.000")
+        off_grid_outcome = _run_temporary(events, days, off_grid)
+        negative_outcome = _run_temporary(events, days, negative)
+>       assert off_grid_outcome["status"] != 0 and negative_outcome["status"] != 0
+E       assert (0 != 0)
+
+/tests/test_outputs.py:524: AssertionError
+_______________ test_c4_invalid_event_or_status_leaves_no_output _______________
+
+    def test_c4_invalid_event_or_status_leaves_no_output():
+        """A zero-length event or unknown day status is rejected before writing."""
+        events, days, readings = _case_data([450.0, 450.0, 450.0])
+        bad_event = [list(events[0])]
+        bad_event[0][3] = bad_event[0][2]
+        bad_days = [list(row) for row in days]
+        bad_days[0][1] = "holiday"
+        event_outcome = _run_temporary(bad_event, days, readings)
+        status_outcome = _run_temporary(events, bad_days, readings)
+>       assert event_outcome["status"] != 0 and status_outcome["status"] != 0
+E       assert (0 != 0)
+
+/tests/test_outputs.py:542: AssertionError
+______________ test_c5_portfolio_avoids_single_event_greedy_trap _______________
+
+    def test_c5_portfolio_avoids_single_event_greedy_trap():
+        """The cheapest feasible set can exclude the single largest event."""
+        specs = [
+            {
+                "id": "evt-a",
+                "site": "site-a",
+                "clock": "12:00",
+                "committed": 160.0,
+                "rate": 0.225,
+                "baseline": 400.0,
+                "actual": 240.0,
+            },
+            {
+                "id": "evt-b",
+                "site": "site-b",
+                "clock": "12:00",
+                "committed": 120.0,
+                "rate": 0.2,
+                "baseline": 400.0,
+                "actual": 280.0,
+            },
+            {
+                "id": "evt-c",
+                "site": "site-c",
+                "clock": "12:15",
+                "committed": 120.0,
+                "rate": 0.2,
+                "baseline": 400.0,
+                "actual": 280.0,
+            },
+        ]
+        events, days, readings, limits = _portfolio_case(
+            specs, ["0.05", "12", "2"]
+        )
+        outcome = _run_temporary(events, days, readings, limits)
+        assert outcome["status"] == 0 and outcome["portfolio"] is not None
+>       assert outcome["portfolio"]["selected_event_ids"] == ["evt-b", "evt-c"]
+E       AssertionError: assert ['evt-a', 'evt-b', 'evt-c'] == ['evt-b', 'evt-c']
+E         
+E         At index 0 diff: 'evt-a' != 'evt-b'
+E         Left contains one more item: 'evt-c'
+E         Use -v to get more diff
+
+/tests/test_outputs.py:587: AssertionError
+__________ test_c5_portfolio_excludes_overlapping_events_at_one_site ___________
+
+    def test_c5_portfolio_excludes_overlapping_events_at_one_site():
+        """Overlapping same-site candidates cannot both be selected."""
+        specs = [
+            {
+                "id": "evt-a",
+                "site": "site-x",
+                "clock": "12:00",
+                "committed": 160.0,
+                "rate": 0.15,
+                "baseline": 400.0,
+                "actual": 240.0,
+            },
+            {
+                "id": "evt-b",
+                "site": "site-x",
+                "clock": "12:00",
+                "committed": 160.0,
+                "rate": 0.15,
+                "baseline": 400.0,
+                "actual": 240.0,
+            },
+            {
+                "id": "evt-c",
+                "site": "site-y",
+                "clock": "12:15",
+                "committed": 120.0,
+                "rate": 0.2,
+                "baseline": 400.0,
+                "actual": 280.0,
+            },
+        ]
+        events, days, readings, limits = _portfolio_case(
+            specs, ["0.06", "12", "2"]
+        )
+        outcome = _run_temporary(events, days, readings, limits)
+        assert outcome["status"] == 0 and outcome["portfolio"] is not None
+>       assert outcome["portfolio"]["selected_event_ids"] == ["evt-a", "evt-c"]
+E       AssertionError: assert ['evt-a', 'evt-b', 'evt-c'] == ['evt-a', 'evt-c']
+E         
+E         At index 1 diff: 'evt-b' != 'evt-c'
+E         Left contains one more item: 'evt-c'
+E         Use -v to get more diff
+
+/tests/test_outputs.py:628: AssertionError
+________________ test_c5_portfolio_uses_lexicographic_tie_break ________________
+
+    def test_c5_portfolio_uses_lexicographic_tie_break():
+        """Equal cost and energy selections use the sorted event-id sequence."""
+        specs = [
+            {
+                "id": "evt-z",
+                "site": "site-z",
+                "clock": "12:00",
+                "committed": 120.0,
+                "rate": 0.2,
+                "baseline": 400.0,
+                "actual": 280.0,
+            },
+            {
+                "id": "evt-a",
+                "site": "site-a",
+                "clock": "12:15",
+                "committed": 120.0,
+                "rate": 0.2,
+                "baseline": 400.0,
+                "actual": 280.0,
+            },
+        ]
+        events, days, readings, limits = _portfolio_case(
+            specs, ["0.03", "6", "1"]
+        )
+        outcome = _run_temporary(events, days, readings, limits)
+        assert outcome["status"] == 0 and outcome["portfolio"] is not None
+>       assert outcome["portfolio"]["selected_event_ids"] == ["evt-a"]
+E       AssertionError: assert ['evt-a', 'evt-z'] == ['evt-a']
+E         
+E         Left contains one more item: 'evt-z'
+E         Use -v to get more diff
+
+/tests/test_outputs.py:659: AssertionError
+________________ test_c5_infeasible_portfolio_leaves_no_outputs ________________
+
+    def test_c5_infeasible_portfolio_leaves_no_outputs():
+        """A target above every feasible combination is rejected atomically."""
+        specs = [
+            {
+                "id": "evt-a",
+                "site": "site-a",
+                "clock": "12:00",
+                "committed": 160.0,
+                "rate": 0.225,
+                "baseline": 400.0,
+                "actual": 240.0,
+            }
+        ]
+        events, days, readings, limits = _portfolio_case(
+            specs, ["0.1", "12", "1"]
+        )
+        outcome = _run_temporary(events, days, readings, limits)
+>       assert outcome["status"] != 0
+E       assert 0 != 0
+
+/tests/test_outputs.py:679: AssertionError
+___________ test_c5_portfolio_scales_without_enumerating_all_subsets ___________
+
+    def test_c5_portfolio_scales_without_enumerating_all_subsets():
+        """Thirty independent candidates resolve through grouped budget states."""
+        specs = [
+            {
+                "id": f"evt-{index:02d}",
+                "site": f"site-{index:02d}",
+                "clock": "12:00",
+                "committed": 100.0,
+                "rate": 0.2,
+                "baseline": 400.0,
+                "actual": 300.0,
+            }
+            for index in range(30)
+        ]
+        events, days, readings, limits = _portfolio_case(
+            specs, ["0.3", "60", "14"]
+        )
+        outcome = _run_temporary(events, days, readings, limits)
+        assert outcome["status"] == 0 and outcome["portfolio"] is not None
+>       assert outcome["portfolio"]["selected_event_ids"] == [
+            f"evt-{index:02d}" for index in range(12)
+        ]
+E       AssertionError: assert ['evt-00', 'e...'evt-05', ...] == ['evt-00', 'e...'evt-05', ...]
+E         
+E         Left contains 18 more items, first extra item: 'evt-12'
+E         Use -v to get more diff
+
+/tests/test_outputs.py:706: AssertionError
+____________ test_c5_demand_charge_breaks_additive_portfolio_choice ____________
+
+    def test_c5_demand_charge_breaks_additive_portfolio_choice():
+        """Coincident committed capacity can rule out the cheapest incentives."""
+        specs = [
+            {
+                "id": "evt-a",
+                "site": "site-a",
+                "clock": "12:00",
+                "committed": 100.0,
+                "rate": 0.28,
+                "baseline": 400.0,
+                "actual": 300.0,
+            },
+            {
+                "id": "evt-b",
+                "site": "site-b",
+                "clock": "12:00",
+                "committed": 100.0,
+                "rate": 0.28,
+                "baseline": 400.0,
+                "actual": 300.0,
+            },
+            {
+                "id": "evt-c",
+                "site": "site-c",
+                "clock": "12:15",
+                "committed": 100.0,
+                "rate": 0.2,
+                "baseline": 400.0,
+                "actual": 300.0,
+            },
+            {
+                "id": "evt-d",
+                "site": "site-d",
+                "clock": "12:15",
+                "committed": 100.0,
+                "rate": 0.2,
+                "baseline": 400.0,
+                "actual": 300.0,
+            },
+        ]
+        events, days, readings, limits = _portfolio_case(
+            specs, ["0.04", "30", "2", "0.1"]
+        )
+        outcome = _run_temporary(events, days, readings, limits)
+        assert outcome["status"] == 0 and outcome["portfolio"] is not None
+>       assert outcome["portfolio"]["selected_event_ids"] == ["evt-a", "evt-c"]
+E       AssertionError: assert ['evt-a', 'ev...t-c', 'evt-d'] == ['evt-a', 'evt-c']
+E         
+E         At index 1 diff: 'evt-b' != 'evt-c'
+E         Left contains 2 more items, first extra item: 'evt-c'
+E         Use -v to get more diff
+
+/tests/test_outputs.py:758: AssertionError
+=============================== warnings summary ===============================
+../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-o_alv3fh'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/lastfailed: [Errno 30] Read-only file system: '/tests/pytest-cache-files-48dfwe7x'
+    config.cache.set("cache/lastfailed", self.lastfailed)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+---------------- generated xml file: /logs/verifier/results.xml ----------------
+=========================== short test summary info ============================
+FAILED ../tests/test_outputs.py::test_c1_fallback_event_keeps_both_repeated_hours
+FAILED ../tests/test_outputs.py::test_c1_spring_forward_skips_nonexistent_clock_hours
+FAILED ../tests/test_outputs.py::test_c1_repeated_clock_matches_distinct_utc_readings
+FAILED ../tests/test_outputs.py::test_c1_ambiguous_boundaries_use_earlier_start_and_later_end
+FAILED ../tests/test_outputs.py::test_c2_fallback_folds_share_the_same_wall_clock_baseline
+FAILED ../tests/test_outputs.py::test_c3_reduction_is_nonnegative_and_capacity_capped
+FAILED ../tests/test_outputs.py::test_c3_payment_uses_quarter_hour_energy_and_event_rate
+FAILED ../tests/test_outputs.py::test_c3_totals_and_summary_use_unrounded_interval_results
+FAILED ../tests/test_outputs.py::test_c4_bad_timestamp_or_negative_energy_leaves_no_output
+FAILED ../tests/test_outputs.py::test_c4_invalid_event_or_status_leaves_no_output
+FAILED ../tests/test_outputs.py::test_c5_portfolio_avoids_single_event_greedy_trap
+FAILED ../tests/test_outputs.py::test_c5_portfolio_excludes_overlapping_events_at_one_site
+FAILED ../tests/test_outputs.py::test_c5_portfolio_uses_lexicographic_tie_break
+FAILED ../tests/test_outputs.py::test_c5_infeasible_portfolio_leaves_no_outputs
+FAILED ../tests/test_outputs.py::test_c5_portfolio_scales_without_enumerating_all_subsets
+FAILED ../tests/test_outputs.py::test_c5_demand_charge_breaks_additive_portfolio_choice
+16 failed, 3 passed, 2 warnings in 3.10s

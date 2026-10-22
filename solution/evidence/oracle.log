@@ -1,0 +1,29 @@
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/oracle/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/oracle/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Exit: 0
+Reward: 1.0
+stdout:
+Looking in links: /tests/wheels
+Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))
+Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))
+Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))
+Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))
+Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))
+Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest
+Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1
+
+stderr:
+  WARNING: The script pygmentize is installed in '/home/worker/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The scripts py.test and pytest are installed in '/home/worker/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+
+[pytest]
+...................                                                      [100%]
+=============================== warnings summary ===============================
+../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-1v369hpb'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+---------------- generated xml file: /logs/verifier/results.xml ----------------
+19 passed, 1 warning in 2.93s

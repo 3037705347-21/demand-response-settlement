@@ -1,0 +1,2 @@
+event_id,site_id,start_local,end_local,timezone,committed_kw,rate_usd_per_kwh
+evt-fall-01,westgate-plaza,2026-11-01T00:45:00,2026-11-01T02:15:00,America/Los_Angeles,190,0.92

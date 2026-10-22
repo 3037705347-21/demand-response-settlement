@@ -1,0 +1,9 @@
+{
+  "selected_event_ids": [
+    "evt-fall-01"
+  ],
+  "eligible_kwh": 383.6,
+  "incentive_usd": 352.912,
+  "demand_charge_usd": 95.0,
+  "payment_usd": 447.912
+}

@@ -1,0 +1,109 @@
+{
+  "currency": "USD",
+  "events": [
+    {
+      "event_id": "evt-fall-01",
+      "site_id": "westgate-plaza",
+      "timezone": "America/Los_Angeles",
+      "committed_kw": 190.0,
+      "rate_usd_per_kwh": 0.92,
+      "intervals": [
+        {
+          "local_start": "2026-11-01T00:45:00-07:00",
+          "start_utc": "2026-11-01T07:45:00Z",
+          "baseline_kw": 619.8,
+          "actual_kw": 410.0,
+          "reduction_kw": 209.8,
+          "eligible_reduction_kw": 190.0,
+          "payment_usd": 43.7
+        },
+        {
+          "local_start": "2026-11-01T01:00:00-07:00",
+          "start_utc": "2026-11-01T08:00:00Z",
+          "baseline_kw": 611.4,
+          "actual_kw": 380.0,
+          "reduction_kw": 231.4,
+          "eligible_reduction_kw": 190.0,
+          "payment_usd": 43.7
+        },
+        {
+          "local_start": "2026-11-01T01:15:00-07:00",
+          "start_utc": "2026-11-01T08:15:00Z",
+          "baseline_kw": 607.0,
+          "actual_kw": 360.0,
+          "reduction_kw": 247.0,
+          "eligible_reduction_kw": 190.0,
+          "payment_usd": 43.7
+        },
+        {
+          "local_start": "2026-11-01T01:30:00-07:00",
+          "start_utc": "2026-11-01T08:30:00Z",
+          "baseline_kw": 593.8,
+          "actual_kw": 420.0,
+          "reduction_kw": 173.8,
+          "eligible_reduction_kw": 173.8,
+          "payment_usd": 39.974
+        },
+        {
+          "local_start": "2026-11-01T01:45:00-07:00",
+          "start_utc": "2026-11-01T08:45:00Z",
+          "baseline_kw": 593.0,
+          "actual_kw": 500.0,
+          "reduction_kw": 93.0,
+          "eligible_reduction_kw": 93.0,
+          "payment_usd": 21.39
+        },
+        {
+          "local_start": "2026-11-01T01:00:00-08:00",
+          "start_utc": "2026-11-01T09:00:00Z",
+          "baseline_kw": 611.4,
+          "actual_kw": 510.0,
+          "reduction_kw": 101.4,
+          "eligible_reduction_kw": 101.4,
+          "payment_usd": 23.322
+        },
+        {
+          "local_start": "2026-11-01T01:15:00-08:00",
+          "start_utc": "2026-11-01T09:15:00Z",
+          "baseline_kw": 607.0,
+          "actual_kw": 340.0,
+          "reduction_kw": 267.0,
+          "eligible_reduction_kw": 190.0,
+          "payment_usd": 43.7
+        },
+        {
+          "local_start": "2026-11-01T01:30:00-08:00",
+          "start_utc": "2026-11-01T09:30:00Z",
+          "baseline_kw": 593.8,
+          "actual_kw": 330.0,
+          "reduction_kw": 263.8,
+          "eligible_reduction_kw": 190.0,
+          "payment_usd": 43.7
+        },
+        {
+          "local_start": "2026-11-01T01:45:00-08:00",
+          "start_utc": "2026-11-01T09:45:00Z",
+          "baseline_kw": 593.0,
+          "actual_kw": 450.0,
+          "reduction_kw": 143.0,
+          "eligible_reduction_kw": 143.0,
+          "payment_usd": 32.89
+        },
+        {
+          "local_start": "2026-11-01T02:00:00-08:00",
+          "start_utc": "2026-11-01T10:00:00Z",
+          "baseline_kw": 553.2,
+          "actual_kw": 480.0,
+          "reduction_kw": 73.2,
+          "eligible_reduction_kw": 73.2,
+          "payment_usd": 16.836
+        }
+      ],
+      "totals": {
+        "reduction_kwh": 450.85,
+        "eligible_kwh": 383.6,
+        "payment_usd": 352.912
+      }
+    }
+  ]
+}
