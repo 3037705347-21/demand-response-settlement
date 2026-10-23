@@ -46,6 +46,8 @@ import sys
 import xml.etree.ElementTree as ET
 
 results, reward_file = sys.argv[1], sys.argv[2]
+total = 0
+reward = 0.0
 try:
     root = ET.parse(results).getroot()
     suite = root if root.tag == "testsuite" else root.find("testsuite")

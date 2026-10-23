@@ -1,4 +1,4 @@
-Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ltvaqhfh/partial-c5/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ltvaqhfh/partial-c5/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-kk2rx_4e/partial-c5/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-kk2rx_4e/partial-c5/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
 Exit: 0
 Reward: 0.315789
 stdout:
@@ -221,4 +221,4 @@ FAILED ../tests/test_outputs.py::test_c3_totals_and_summary_use_unrounded_interv
 FAILED ../tests/test_outputs.py::test_c4_duplicate_utc_reading_leaves_no_output
 FAILED ../tests/test_outputs.py::test_c4_bad_timestamp_or_negative_energy_leaves_no_output
 FAILED ../tests/test_outputs.py::test_c4_invalid_event_or_status_leaves_no_output
-13 failed, 6 passed in 2.99s
+13 failed, 6 passed in 3.10s

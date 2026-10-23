@@ -1,4 +1,4 @@
-Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ltvaqhfh/bypass-empty/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ltvaqhfh/bypass-empty/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-kk2rx_4e/bypass-empty/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-kk2rx_4e/bypass-empty/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
 Exit: 0
 Reward: 0.0
 stdout:
@@ -445,4 +445,4 @@ FAILED ../tests/test_outputs.py::test_c5_portfolio_uses_lexicographic_tie_break
 FAILED ../tests/test_outputs.py::test_c5_infeasible_portfolio_leaves_no_outputs
 FAILED ../tests/test_outputs.py::test_c5_portfolio_scales_without_enumerating_all_subsets
 FAILED ../tests/test_outputs.py::test_c5_demand_charge_breaks_additive_portfolio_choice
-19 failed in 3.01s
+19 failed in 3.10s

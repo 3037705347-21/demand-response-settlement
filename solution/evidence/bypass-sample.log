@@ -1,4 +1,4 @@
-Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ltvaqhfh/bypass-sample/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ltvaqhfh/bypass-sample/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-kk2rx_4e/bypass-sample/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-kk2rx_4e/bypass-sample/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
 Exit: 0
 Reward: 0.157895
 stdout:
@@ -146,9 +146,9 @@ __________ test_c3_totals_and_summary_use_unrounded_interval_results ___________
 E       AssertionError: assert {'eligible_kw..._kwh': 450.85} == {'eligible_kw...n_kwh': 167.5}
 E         
 E         Differing items:
-E         {'reduction_kwh': 450.85} != {'reduction_kwh': 167.5}
-E         {'eligible_kwh': 383.6} != {'eligible_kwh': 82.5}
 E         {'payment_usd': 352.912} != {'payment_usd': 41.25}
+E         {'eligible_kwh': 383.6} != {'eligible_kwh': 82.5}
+E         {'reduction_kwh': 450.85} != {'reduction_kwh': 167.5}
 E         Use -v to get more diff
 
 /tests/test_outputs.py:489: AssertionError
@@ -445,4 +445,4 @@ FAILED ../tests/test_outputs.py::test_c5_portfolio_uses_lexicographic_tie_break
 FAILED ../tests/test_outputs.py::test_c5_infeasible_portfolio_leaves_no_outputs
 FAILED ../tests/test_outputs.py::test_c5_portfolio_scales_without_enumerating_all_subsets
 FAILED ../tests/test_outputs.py::test_c5_demand_charge_breaks_additive_portfolio_choice
-16 failed, 3 passed in 2.99s
+16 failed, 3 passed in 3.01s

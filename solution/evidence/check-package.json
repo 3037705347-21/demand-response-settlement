@@ -475,9 +475,9 @@
    "detail": ""
   }
  ],
- "task_dir": "/private/tmp/harbor-pkg-review-final2.Av8DNp/task",
- "dirhash": "844b277322a3d9a5225c9984a230343f4b441171397df5ed73e3205b342b445a",
- "checked_at": "2026-10-23T15:59:45+08:00",
+ "task_dir": "/private/tmp/harbor-pkg-review-final3.xI4mVm/task",
+ "dirhash": "91fcd3beee09e3d16ecfbeeffa5f4109b471140c98a7b38dd6c05f65575214b8",
+ "checked_at": "2026-10-23T16:03:44+08:00",
  "vendor_checks": {
   "check_test_quality": {
    "exit": 0,
