@@ -1,0 +1,344 @@
+{
+ "schema_version": 1,
+ "task_dir": "/Users/zhangchengcheng/harbor/demand-response-settlement",
+ "image_tag": "harbor-quality:demand-response-settlement",
+ "cases": [
+  {
+   "case": "build",
+   "verdict": "PASS",
+   "reward": null,
+   "command": "docker build -t harbor-quality:demand-response-settlement . (cwd=environment/)",
+   "expect": "exit=0",
+   "note": "",
+   "log_tail": [
+    "",
+    "#15 [codex 3/4] ADD --checksum=sha256:30efc97738b975940d78b59a9bea115fa34040b732807d54ec35ae6b7528de94     https://cdn.npmmirror.com/packages/%40openai/codex/0.163.0-linux-x64/codex-0.163.0-linux-x64.tgz     /tmp/codex-x64.tgz",
+    "#15 CACHED",
+    "",
+    "#16 [stage-1 4/8] RUN find /usr/local/lib/python3.12 -type f -name '*.pyc' -delete     && find /usr/local/lib/python3.12 -type d -name '__pycache__' -empty -delete",
+    "#16 CACHED",
+    "",
+    "#17 [codex 4/4] RUN case \"arm64\" in       arm64) archive=/tmp/codex-arm64.tgz ;;       amd64) archive=/tmp/codex-x64.tgz ;;       *) echo \"unsupported architecture: arm64\" >&2; exit 1 ;;     esac     && mkdir -p /opt/codex     && tar -xzf \"$archive\" -C /opt/codex        --wildcards        'package/vendor/*/bin/codex'        'package/vendor/*/bin/codex-code-mode-host'        'package/vendor/*/codex-path/rg'        'package/vendor/*/codex-resources/bwrap'",
+    "#17 CACHED",
+    "",
+    "#18 [stage-1 5/8] RUN useradd --create-home --uid 10001 worker",
+    "#18 CACHED",
+    "",
+    "#19 [stage-1 8/8] RUN chown -R worker:worker /workspace",
+    "#19 CACHED",
+    "",
+    "#20 exporting to image",
+    "#20 exporting layers done",
+    "#20 exporting manifest sha256:c200379157fca0f30c1bc2637dc4761ef44c9581aa5c222b1d5d3b6aad32258f done",
+    "#20 exporting config sha256:246aaa6137690d4ae97974191f35cead1f0801426cdda50e0aa1b433d7ca959b done",
+    "#20 exporting attestation manifest sha256:8e49e36f0291fe14563826274a21d642b8f811772d4ff52dded9756185951321 done",
+    "#20 exporting manifest list sha256:ccc9b3b27ff2c83ed376b02ea29cb351d632afbd58ba20b1cdc71eb5a4a1e1b3 done",
+    "#20 naming to docker.io/library/harbor-quality:demand-response-settlement done",
+    "#20 unpacking to docker.io/library/harbor-quality:demand-response-settlement done",
+    "#20 DONE 0.1s"
+   ]
+  },
+  {
+   "case": "startup",
+   "verdict": "PASS",
+   "reward": null,
+   "command": "docker run -d --name harbor-quality-demand-response-settlement-startup-demand-response-settlement harbor-quality:demand-response-settlement; docker inspect",
+   "expect": "container stays running or exits 0",
+   "note": "",
+   "log_tail": [
+    "false 0"
+   ]
+  },
+  {
+   "case": "forward_reference_solution",
+   "verdict": "PASS",
+   "reward": 1.0,
+   "command": "docker run … bash -lc '<solve.sh>; <test.sh>; cat reward'",
+   "expect": "reward=1.000",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=1.000000"
+   ]
+  },
+  {
+   "case": "repeatable",
+   "verdict": "PASS",
+   "reward": 1.0,
+   "command": "第二次 clean forward run",
+   "expect": "reward=1.000",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=1.000000"
+   ]
+  },
+  {
+   "case": "reverse_clean_environment",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "docker run … bash -lc '<test.sh>; cat reward'",
+   "expect": "reward=0.000（NOP 同理必须 ≤0.100）",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000"
+   ]
+  },
+  {
+   "case": "crash_candidate_writes_zero",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "候选 /workspace 替换为 exit 3 后运行 test.sh",
+   "expect": "reward=0.000 且文件非空",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000",
+    "bash: line 1: /workspace: Is a directory"
+   ]
+  },
+  {
+   "case": "stale_reward_overwritten",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "预先写入旧 reward=1，再运行 test.sh",
+   "expect": "reward=0.000 且旧值被覆盖",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000"
+   ]
+  },
+  {
+   "case": "anticheat_runner_substitution",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "替换 timeout 为打印 SCORE 1.0 并返回 0 的空壳后运行 test.sh",
+   "expect": "reward=0.000，且不得把 SCORE 单行文本当作完成证据",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000",
+    "cp: cannot create regular file '/usr/bin/timeout': Permission denied"
+   ]
+  },
+  {
+   "case": "anticheat_python_substitution",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "同名 python/python3/pytest/timeout 注入 PATH 后运行 test.sh",
+   "expect": "受信绝对入口不被 PATH 覆盖，reward=0.000",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000"
+   ]
+  },
+  {
+   "case": "anticheat_pytest_cwd",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "在 /workspace/pytest.py 注入同名模块后运行 test.sh",
+   "expect": "受信 pytest 导入与 -P 隔离生效，reward=0.000",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000"
+   ]
+  },
+  {
+   "case": "anticheat_startup_injection",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "向受信 Python site-packages 注入 sitecustomize.py 和 .pth 后运行 test.sh",
+   "expect": "-S/env -i 隔离启动钩子，reward=0.000",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000",
+    "bash: line 4: /usr/local/lib/python3.12/site-packages/sitecustomize.py: Permission denied",
+    "bash: line 5: /usr/local/lib/python3.12/site-packages/99-hbr-hijack.pth: Permission denied"
+   ]
+  },
+  {
+   "case": "timeout_writes_zero",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "候选入口 sleep 30，外层 5 秒终止 test.sh",
+   "expect": "reward=0.000",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "OUTER_EXIT=124",
+    "REWARD=0",
+    "bash: line 1: /workspace: Is a directory"
+   ]
+  },
+  {
+   "case": "anticheat_candidate_writes_reward",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "候选尝试直接写 /logs/verifier/reward.txt 后运行 test.sh",
+   "expect": "reward 仍为 0.000（verifier 必须覆盖/归零）",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000",
+    "bash: line 1: /workspace: Is a directory"
+   ]
+  },
+  {
+   "case": "anticheat_tests_tamper",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "候选尝试改写 /tests/test_outputs.py",
+   "expect": "测试保持只读且 reward=0.000",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000",
+    "bash: line 1: /workspace: Is a directory"
+   ]
+  },
+  {
+   "case": "anticheat_background_reward",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "候选启动后台进程延迟写 reward",
+   "expect": "最终 reward 仍为 0.000",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000",
+    "bash: line 1: /workspace: Is a directory"
+   ]
+  },
+  {
+   "case": "anticheat_completion_artifacts",
+   "verdict": "PASS",
+   "reward": 0.0,
+   "command": "预置伪造 reward/status/JUnit/scoring-report 后运行 test.sh",
+   "expect": "全部完成制品由受信 verifier 重建，最终 reward=0.000",
+   "note": "",
+   "log_tail": [
+    "Looking in links: /tests/wheels",
+    "Processing /tests/wheels/iniconfig-2.3.1-py3-none-any.whl (from -r /tests/requirements.txt (line 1))",
+    "Processing /tests/wheels/packaging-26.3-py3-none-any.whl (from -r /tests/requirements.txt (line 2))",
+    "Processing /tests/wheels/pluggy-1.7.0-py3-none-any.whl (from -r /tests/requirements.txt (line 3))",
+    "Processing /tests/wheels/pygments-2.21.0-py3-none-any.whl (from -r /tests/requirements.txt (line 4))",
+    "Processing /tests/wheels/pytest-8.4.1-py3-none-any.whl (from -r /tests/requirements.txt (line 5))",
+    "Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest",
+    "Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1",
+    "EXIT=0",
+    "REWARD=0.000000"
+   ]
+  }
+ ],
+ "candidate_entry": "/workspace",
+ "candidate_env_var": "DR_SETTLE_WORKSPACE",
+ "reward_path": "/logs/verifier/reward.txt"
+}

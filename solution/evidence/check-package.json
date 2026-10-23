@@ -1,0 +1,494 @@
+{
+ "schema_version": 1,
+ "counts": {
+  "PASS": 26,
+  "FAIL": 0,
+  "REVIEW": 11,
+  "NA": 6
+ },
+ "items": [
+  {
+   "group": "GATE",
+   "id": "STRUCT-01",
+   "name": "必需文件齐全",
+   "verdict": "PASS",
+   "evidence": [
+    "required=['task.toml', 'instruction.md', 'environment/Dockerfile', 'solution/solve.sh', 'tests/test.sh']",
+    "missing=[]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-02",
+   "name": "无禁止产物（.DS_Store/__pycache__/review/.git 等）",
+   "verdict": "PASS",
+   "evidence": [
+    "hits=[]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-03",
+   "name": "tests/test.sh 可执行位 = 0755",
+   "verdict": "PASS",
+   "evidence": [
+    "mode=0o755"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-04",
+   "name": "solution/solve.sh 具备可执行位",
+   "verdict": "PASS",
+   "evidence": [
+    "mode=0o755"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-05",
+   "name": "task.toml schema_version ≥ 1.3（且无遗留 version 别名）",
+   "verdict": "PASS",
+   "evidence": [
+    "schema_version=1.3",
+    "legacy_version_key=False"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-06",
+   "name": "task.toml 必需段落与 difficulty 标注",
+   "verdict": "PASS",
+   "evidence": [
+    "sections=['[task]', '[environment]', '[verifier]', '[agent]']",
+    "difficulty=expert"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-07",
+   "name": "[agent].timeout_sec 在 900–1800 之间",
+   "verdict": "REVIEW",
+   "evidence": [
+    "agent_timeout_sec=3600"
+   ],
+   "detail": "规则：900 连续超时→1800；禁止堆到 3600 以上掩盖任务失控"
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-08",
+   "name": "test.sh 内层 timeout 明显短于 [verifier].timeout_sec",
+   "verdict": "PASS",
+   "evidence": [
+    "verifier_timeout_sec=300",
+    "inner_timeouts=[240]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-09",
+   "name": "test.sh fail-closed：先写 0 + EXIT/INT/TERM/HUP 兜底 + 写后 0444",
+   "verdict": "PASS",
+   "evidence": [
+    "writes_reward=True",
+    "chmod_0444=True",
+    "trap_keywords=['INT', 'TERM', 'HUP']"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "SAFETY",
+   "id": "CHEAT-03",
+   "name": "verifier 完整执行与 runner 替换防护",
+   "verdict": "PASS",
+   "evidence": [
+    "score_text=False",
+    "junit_report=True",
+    "report_guard=True",
+    "structured_parser=True",
+    "incomplete_status=True"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-10",
+   "name": "test.sh 使用 pytest 作为入口",
+   "verdict": "PASS",
+   "evidence": [
+    "pytest 出现在 test.sh"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-11",
+   "name": "基础镜像 digest 锁定",
+   "verdict": "PASS",
+   "evidence": [
+    "from_lines=['FROM python:3.12.8-slim-bookworm@sha256:2199a62885a12290dc9c5be3ca0681d367576ab7bf037da120e564723292a2f0 AS codex', 'FROM python:3.12.8-slim-bookworm@sha256:2199a62885a12290dc9c5be3ca0681d367576ab7bf037da120e564723292a2f0']"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-12",
+   "name": "pip 依赖版本固定（==）",
+   "verdict": "NA",
+   "evidence": [
+    "pip_lines=[]",
+    "pinned=[]",
+    "suspicious=[]"
+   ],
+   "detail": "无 pip 安装"
+  },
+  {
+   "group": "GATE",
+   "id": "STRUCT-13",
+   "name": "含 .deb/原生二进制时双架构 + 按架构选择安装",
+   "verdict": "NA",
+   "evidence": [
+    "deb_count=0",
+    "amd64&arm64=True",
+    "arch_select=True",
+    "bad_glob=[]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "SAFETY",
+   "id": "LEAK-01",
+   "name": "镜像 COPY 不含 tests/ 或 solution/",
+   "verdict": "PASS",
+   "evidence": [
+    "copy_lines=['--from=codex /opt/codex /opt/codex', 'workspace/ /workspace/']",
+    "bad=[]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "SAFETY",
+   "id": "LEAK-02",
+   "name": "environment/ 下不残留测试或参考解文件",
+   "verdict": "PASS",
+   "evidence": [
+    "hits=[]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "SAFETY",
+   "id": "LEAK-03",
+   "name": "Agent 可见文件无缺陷/答案定位提示",
+   "verdict": "PASS",
+   "evidence": [
+    "未命中 BUG:/FIXME/正确值是 等模式"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "SAFETY",
+   "id": "LEAK-04",
+   "name": "solve.sh 展示解题过程而非硬编码产物",
+   "verdict": "PASS",
+   "evidence": [
+    "lines=7",
+    "echoes_only=False"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "SAFETY",
+   "id": "CHEAT-01",
+   "name": "候选以非特权身份运行（或等价隔离）",
+   "verdict": "REVIEW",
+   "evidence": [
+    "isolation_markers=[]"
+   ],
+   "detail": "候选与 verifier 同权限时可篡改 reward/评分文件"
+  },
+  {
+   "group": "SAFETY",
+   "id": "CHEAT-02",
+   "name": "reward 只由 verifier 写入且失败路径显式归零",
+   "verdict": "PASS",
+   "evidence": [
+    "chmod 0444 + 显式 0/1 分支"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-01",
+   "name": "behavior_in_task_description：测试行为在题面有对应",
+   "verdict": "PASS",
+   "evidence": [
+    "test_funcs=19",
+    "docstrings≈31"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "SPEC-01",
+   "name": "题面↔测试一致：可观察输出通道与固定前缀已由题面授权",
+   "verdict": "NA",
+   "evidence": [
+    "tests_asserting_stdout_or_stderr=0",
+    "instruction_declares_channel=False",
+    "unauthorized_literals=[]",
+    "tests_without_channel_statement=[]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-02",
+   "name": "behavior_in_tests：题面要求都有测试覆盖",
+   "verdict": "REVIEW",
+   "evidence": [
+    "normative_lines=7",
+    "关键词未命中行数=2",
+    "样例:同一站点两个候选事件的 UTC 区间只要有任意一个 15 分钟块重叠，就不能同时入选。选出的组合必须满足 `max_events`。组合的区间补偿是各事件 `payment_usd",
+    "样例:任何字段、时间边界、唯一性、状态或候选数量不合格，或者不存在满足目标的组合，都应返回非零状态，并且不得新建或覆盖三份正式产物。`data/` 是按固定种子生成的复核样例，不是现场采"
+   ],
+   "detail": "需人工逐条核对矩阵，勿据此判 FAIL"
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-03",
+   "name": "informative_test_structure：结构清晰有注释",
+   "verdict": "REVIEW",
+   "evidence": [
+    "comment_lines=0",
+    "longest_test_lines=1"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-04",
+   "name": "anti_cheating_measures：无法走捷径提分",
+   "verdict": "REVIEW",
+   "evidence": [
+    "isolation=[]",
+    "需实际做绕过实验（见 docker_e2e.py 的反作弊实验段）"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-05",
+   "name": "structured_data_schema：schema 明确定义",
+   "verdict": "REVIEW",
+   "evidence": [
+    "json_output=True",
+    "schema_declared=False"
+   ],
+   "detail": "结构化输出必须有明确 schema，不能只给示例"
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-06",
+   "name": "pinned_dependencies",
+   "verdict": "NA",
+   "evidence": [
+    "pinned=[]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-07",
+   "name": "typos：无拼写错误",
+   "verdict": "REVIEW",
+   "evidence": [
+    "静态脚本无法可靠判定拼写/术语；必须人工或 LLM 复核后写入报告"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-08",
+   "name": "tests_or_solution_in_image",
+   "verdict": "PASS",
+   "evidence": [
+    "bad_copy=[]",
+    "env_files=[]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-09",
+   "name": "test_deps_in_image：测试依赖应在 test.sh 内安装",
+   "verdict": "PASS",
+   "evidence": [
+    "pytest_in_dockerfile=False"
+   ],
+   "detail": "该做法按改进建议记录；是否阻断取决于当前规则和真实运行证据。"
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-10",
+   "name": "hardcoded_solution",
+   "verdict": "PASS",
+   "evidence": [
+    "echoes_only=False"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "AI-11",
+   "name": "file_reference_mentioned：Agent 需产出的文件在题面提及",
+   "verdict": "PASS",
+   "evidence": [
+    "output_files=['baseline_days.csv', 'events.csv', 'out/portfolio.json', 'out/settlement.json', 'out/summary.csv', 'portfolio.csv', 'readings.csv', 'settlement.json']",
+    "未提及=[]"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "STD-01",
+   "name": "题目质量：需领域知识（非拼写/语法题）",
+   "verdict": "REVIEW",
+   "evidence": [
+    "需人工阅读题面与环境后判定；静态脚本只看泄漏与结构"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "STD-02",
+   "name": "题目描述：充分准确且不泄露答案",
+   "verdict": "PASS",
+   "evidence": [
+    "leaks=0"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "STD-03",
+   "name": "评分脚本：全路径写 reward + 反硬编码",
+   "verdict": "PASS",
+   "evidence": [
+    "writes_reward=True",
+    "chmod_0444=True"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "STD-04",
+   "name": "参考解覆盖全部问题且得满分",
+   "verdict": "REVIEW",
+   "evidence": [
+    "需 docker_e2e.py 正向验证"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "STD-05",
+   "name": "环境安全：镜像不含 tests/solution，注释无答案提示",
+   "verdict": "PASS",
+   "evidence": [
+    "bad_copy=[]",
+    "env_files=[]",
+    "leaks=0"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "QUALITY",
+   "id": "STD-06",
+   "name": "端到端：正向=1，反向=0",
+   "verdict": "REVIEW",
+   "evidence": [
+    "需 docker_e2e.py 验证"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "RISK",
+   "id": "AUTH-01",
+   "name": "AI 文风与内部术语（题面骨架短语/单模板生成器/内部术语）",
+   "verdict": "PASS",
+   "evidence": [
+    "exit=0",
+    "blocking=0",
+    "style_warnings=0"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "RISK",
+   "id": "AUTH-02",
+   "name": "跨题骨架同构",
+   "verdict": "REVIEW",
+   "evidence": [
+    "未提供 --peer-task-dir，无法判断同批题目是否共用骨架"
+   ],
+   "detail": "批量出题必须一次传入同批全部题目目录"
+  },
+  {
+   "group": "RISK",
+   "id": "DATA-02",
+   "name": "来源说明不是流水线键值清单 / 不与他人同款",
+   "verdict": "NA",
+   "evidence": [
+    "agent 可见 DATA_SOURCE.txt=0",
+    "键值清单=[]",
+    "与同批完全相同=0"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "RISK",
+   "id": "DATA-01",
+   "name": "数据合成痕迹（等频实体/连续编号/恒定时间步）",
+   "verdict": "NA",
+   "evidence": [
+    "generators=[]",
+    "未提供 --dataset-root"
+   ],
+   "detail": ""
+  },
+  {
+   "group": "RISK",
+   "id": "CANARY-01",
+   "name": "无模板化流水线残留（canary/内部路径）",
+   "verdict": "PASS",
+   "evidence": [
+    "hits=[]"
+   ],
+   "detail": ""
+  }
+ ],
+ "task_dir": "/private/tmp/harbor-pkg-review-final2.Av8DNp/task",
+ "dirhash": "844b277322a3d9a5225c9984a230343f4b441171397df5ed73e3205b342b445a",
+ "checked_at": "2026-10-23T15:59:45+08:00",
+ "vendor_checks": {
+  "check_test_quality": {
+   "exit": 0,
+   "tail": [
+    "⚠️ test_outputs.py:760 test_c5_demand_charge_breaks_additive_portfolio_choice: 浮点相等比较，应使用 pytest.approx 或显式容差",
+    "⚠️ test_outputs.py:761 test_c5_demand_charge_breaks_additive_portfolio_choice: 浮点相等比较，应使用 pytest.approx 或显式容差",
+    "⚠️ test_outputs.py:762 test_c5_demand_charge_breaks_additive_portfolio_choice: 浮点相等比较，应使用 pytest.approx 或显式容差",
+    "⚠️ test_outputs.py:713 test_c5_demand_charge_breaks_additive_portfolio_choice: docstring 未原样引用题面原文；请用引号引用 instruction.md 中的原句，便于双向追溯",
+    "",
+    "测试代码质量检查通过（警告 29 / 提示 0）"
+   ]
+  }
+ }
+}

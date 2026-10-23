@@ -1,4 +1,4 @@
-Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-_6kyilk3/bypass-truncated/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-_6kyilk3/bypass-truncated/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ltvaqhfh/bypass-truncated/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ltvaqhfh/bypass-truncated/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
 Exit: 0
 Reward: 0.0
 stdout:
@@ -12,10 +12,6 @@ Installing collected packages: pygments, pluggy, packaging, iniconfig, pytest
 Successfully installed iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pygments-2.21.0 pytest-8.4.1
 
 stderr:
-  WARNING: The script pygmentize is installed in '/home/worker/.local/bin' which is not on PATH.
-  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
-  WARNING: The scripts py.test and pytest are installed in '/home/worker/.local/bin' which is not on PATH.
-  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
 
 [pytest]
 FFFFFFFFFFFFFFFFFFF                                                      [100%]
@@ -206,8 +202,8 @@ E       AssertionError: assert {'eligible_kw...ion_kwh': 0.0} == {'eligible_kw..
 E         
 E         Differing items:
 E         {'payment_usd': 0.0} != {'payment_usd': 41.25}
-E         {'eligible_kwh': 0.0} != {'eligible_kwh': 82.5}
 E         {'reduction_kwh': 0.0} != {'reduction_kwh': 167.5}
+E         {'eligible_kwh': 0.0} != {'eligible_kwh': 82.5}
 E         Use -v to get more diff
 
 /tests/test_outputs.py:489: AssertionError
@@ -488,16 +484,6 @@ E         Left contains 2 more items, first extra item: 'evt-c'
 E         Use -v to get more diff
 
 /tests/test_outputs.py:758: AssertionError
-=============================== warnings summary ===============================
-../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475
-  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-2gmsje19'
-    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
-
-../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
-  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/lastfailed: [Errno 30] Read-only file system: '/tests/pytest-cache-files-9sciz1w2'
-    config.cache.set("cache/lastfailed", self.lastfailed)
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 ---------------- generated xml file: /logs/verifier/results.xml ----------------
 =========================== short test summary info ============================
 FAILED ../tests/test_outputs.py::test_c1_fallback_event_keeps_both_repeated_hours
@@ -519,4 +505,4 @@ FAILED ../tests/test_outputs.py::test_c5_portfolio_uses_lexicographic_tie_break
 FAILED ../tests/test_outputs.py::test_c5_infeasible_portfolio_leaves_no_outputs
 FAILED ../tests/test_outputs.py::test_c5_portfolio_scales_without_enumerating_all_subsets
 FAILED ../tests/test_outputs.py::test_c5_demand_charge_breaks_additive_portfolio_choice
-19 failed, 2 warnings in 3.44s
+19 failed in 3.49s
