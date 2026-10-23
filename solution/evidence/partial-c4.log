@@ -1,4 +1,4 @@
-Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/partial-c4/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/partial-c4/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-_6kyilk3/partial-c4/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-_6kyilk3/partial-c4/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
 Exit: 0
 Reward: 0.157895
 stdout:
@@ -197,9 +197,9 @@ __________ test_c3_totals_and_summary_use_unrounded_interval_results ___________
 E       AssertionError: assert {'eligible_kw...n_kwh': 155.0} == {'eligible_kw...n_kwh': 167.5}
 E         
 E         Differing items:
-E         {'reduction_kwh': 155.0} != {'reduction_kwh': 167.5}
-E         {'eligible_kwh': 155.0} != {'eligible_kwh': 82.5}
 E         {'payment_usd': 77.5} != {'payment_usd': 41.25}
+E         {'eligible_kwh': 155.0} != {'eligible_kwh': 82.5}
+E         {'reduction_kwh': 155.0} != {'reduction_kwh': 167.5}
 E         Use -v to get more diff
 
 /tests/test_outputs.py:489: AssertionError
@@ -441,11 +441,11 @@ E         Use -v to get more diff
 /tests/test_outputs.py:758: AssertionError
 =============================== warnings summary ===============================
 ../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475
-  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-1835hvp3'
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-yydn0icc'
     config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
 
 ../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
-  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/lastfailed: [Errno 30] Read-only file system: '/tests/pytest-cache-files-yufyln4k'
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/lastfailed: [Errno 30] Read-only file system: '/tests/pytest-cache-files-v_fwf__d'
     config.cache.set("cache/lastfailed", self.lastfailed)
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
@@ -467,4 +467,4 @@ FAILED ../tests/test_outputs.py::test_c5_portfolio_uses_lexicographic_tie_break
 FAILED ../tests/test_outputs.py::test_c5_infeasible_portfolio_leaves_no_outputs
 FAILED ../tests/test_outputs.py::test_c5_portfolio_scales_without_enumerating_all_subsets
 FAILED ../tests/test_outputs.py::test_c5_demand_charge_breaks_additive_portfolio_choice
-16 failed, 3 passed, 2 warnings in 3.17s
+16 failed, 3 passed, 2 warnings in 3.26s

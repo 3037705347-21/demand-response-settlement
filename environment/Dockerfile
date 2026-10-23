@@ -1,36 +1,29 @@
+# syntax=docker/dockerfile:1.7
+FROM python:3.12.8-slim-bookworm@sha256:2199a62885a12290dc9c5be3ca0681d367576ab7bf037da120e564723292a2f0 AS codex
+ADD --checksum=sha256:dc6e7c4d6de71c23a0f60d05e2577ff7eef615b76f22630d58ad384b84763522 \
+    https://cdn.npmmirror.com/packages/%40openai/codex/0.163.0-linux-arm64/codex-0.163.0-linux-arm64.tgz \
+    /tmp/codex-arm64.tgz
+ADD --checksum=sha256:30efc97738b975940d78b59a9bea115fa34040b732807d54ec35ae6b7528de94 \
+    https://cdn.npmmirror.com/packages/%40openai/codex/0.163.0-linux-x64/codex-0.163.0-linux-x64.tgz \
+    /tmp/codex-x64.tgz
+ARG TARGETARCH
+RUN case "$TARGETARCH" in \
+      arm64) archive=/tmp/codex-arm64.tgz ;; \
+      amd64) archive=/tmp/codex-x64.tgz ;; \
+      *) echo "unsupported architecture: $TARGETARCH" >&2; exit 1 ;; \
+    esac \
+    && mkdir -p /opt/codex \
+    && tar -xzf "$archive" -C /opt/codex \
+       --wildcards \
+       'package/vendor/*/bin/codex' \
+       'package/vendor/*/bin/codex-code-mode-host' \
+       'package/vendor/*/codex-path/rg' \
+       'package/vendor/*/codex-resources/bwrap'
+
 FROM python:3.12.8-slim-bookworm@sha256:2199a62885a12290dc9c5be3ca0681d367576ab7bf037da120e564723292a2f0
-
-RUN python - <<'PY'
-import hashlib
-import io
-import os
-import platform
-import tarfile
-import urllib.request
-
-version = "22.23.4"
-arch_map = {
-    "x86_64": ("x64", "1805bcd35e6815559bd2eb97db438d3fdb0eb3a5e6a977b7c1badca76337e9ce"),
-    "aarch64": ("arm64", "6287aa46b6c375d816e63ae66d024fbbfd70404825aabdfdf898a970871d2f4b"),
-}
-arch, expected = arch_map[platform.machine()]
-filename = f"node-v{version}-linux-{arch}.tar.xz"
-with urllib.request.urlopen(f"https://npmmirror.com/mirrors/node/v{version}/{filename}") as response:
-    archive_bytes = response.read()
-if hashlib.sha256(archive_bytes).hexdigest() != expected:
-    raise SystemExit("Node.js archive checksum mismatch")
-with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:xz") as archive:
-    archive.extractall("/opt", filter="data")
-os.rename(f"/opt/node-v{version}-linux-{arch}", "/opt/node")
-PY
-
-ENV PATH="/opt/node/bin:${PATH}"
-
-RUN npm install --registry=https://registry.npmmirror.com -g @openai/codex@0.163.0 \
-    && rm -rf /root/.npm \
-    && ln -sf /opt/node/bin/node /usr/local/bin/node \
-    && ln -sf /opt/node/bin/npm /usr/local/bin/npm \
-    && ln -sf /opt/node/bin/codex /usr/local/bin/codex
+COPY --from=codex /opt/codex /opt/codex
+RUN ln -s /opt/codex/package/vendor/*/bin/codex /usr/local/bin/codex \
+    && ln -s /opt/codex/package/vendor/*/codex-path/rg /usr/local/bin/rg
 
 RUN find /usr/local/lib/python3.12 -type f -name '*.pyc' -delete \
     && find /usr/local/lib/python3.12 -type d -name '__pycache__' -empty -delete

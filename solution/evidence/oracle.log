@@ -1,4 +1,4 @@
-Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/oracle/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/oracle/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-_6kyilk3/oracle/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-_6kyilk3/oracle/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
 Exit: 0
 Reward: 1.0
 stdout:
@@ -21,9 +21,9 @@ stderr:
 ...................                                                      [100%]
 =============================== warnings summary ===============================
 ../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475
-  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-1v369hpb'
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-ie4sytij'
     config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 ---------------- generated xml file: /logs/verifier/results.xml ----------------
-19 passed, 1 warning in 2.93s
+19 passed, 1 warning in 3.06s

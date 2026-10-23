@@ -1,4 +1,4 @@
-Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/partial-c3/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-ai8lunw0/partial-c3/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
+Command: docker run --rm --user 10001:10001 --network host -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-_6kyilk3/partial-c3/workspace:/workspace:ro -v /Users/zhangchengcheng/harbor/demand-response-settlement/tests:/tests:ro -v /var/folders/jz/2ksjlg25597g30hd7ltt3nd00000gn/T/dr-quality-_6kyilk3/partial-c3/logs:/logs harbor-quality:demand-response-settlement bash /tests/test.sh
 Exit: 0
 Reward: 0.157895
 stdout:
@@ -429,11 +429,11 @@ E         Use -v to get more diff
 /tests/test_outputs.py:758: AssertionError
 =============================== warnings summary ===============================
 ../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475
-  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-4vk3nbmf'
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:475: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/nodeids: [Errno 30] Read-only file system: '/tests/pytest-cache-files-ch453bei'
     config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
 
 ../home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429
-  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/lastfailed: [Errno 30] Read-only file system: '/tests/pytest-cache-files-3zxawnb2'
+  /home/worker/.local/lib/python3.12/site-packages/_pytest/cacheprovider.py:429: PytestCacheWarning: could not create cache path /tests/.pytest_cache/v/cache/lastfailed: [Errno 30] Read-only file system: '/tests/pytest-cache-files-z7jxthsy'
     config.cache.set("cache/lastfailed", self.lastfailed)
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
@@ -455,4 +455,4 @@ FAILED ../tests/test_outputs.py::test_c5_portfolio_uses_lexicographic_tie_break
 FAILED ../tests/test_outputs.py::test_c5_infeasible_portfolio_leaves_no_outputs
 FAILED ../tests/test_outputs.py::test_c5_portfolio_scales_without_enumerating_all_subsets
 FAILED ../tests/test_outputs.py::test_c5_demand_charge_breaks_additive_portfolio_choice
-16 failed, 3 passed, 2 warnings in 3.04s
+16 failed, 3 passed, 2 warnings in 3.16s
